@@ -6,6 +6,8 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+// ... imports permanecem os mesmos ...
+
 public class Servidor {
     static List<Aluno> alunos = new ArrayList<>();
     static List<Livro> livros = new ArrayList<>();
@@ -85,36 +87,30 @@ public class Servidor {
     }
 
     static void listarAlunos(HttpExchange exchange) throws IOException {
-        StringBuilder html = new StringBuilder(cabecalhoHtml("Lista de Alunos"));
+        StringBuilder html = new StringBuilder(cabecalhoHtml("Lista de Alunos", "fa-user-graduate"));
         html.append("<ul>");
         for (Aluno a : alunos) {
-            html.append("<li>")
-                .append(a.nome).append(" - ")
+            html.append("<li>").append(a.nome).append(" - ")
                 .append(a.matricula).append(" (").append(a.turma).append(")</li>");
         }
-        html.append("</ul>");
-        html.append(botaoVoltar());
-        html.append(rodapeHtml());
+        html.append("</ul>").append(botaoVoltar()).append(rodapeHtml());
         responder(exchange, html.toString());
     }
 
     static void listarLivros(HttpExchange exchange) throws IOException {
-        StringBuilder html = new StringBuilder(cabecalhoHtml("Lista de Livros"));
+        StringBuilder html = new StringBuilder(cabecalhoHtml("Lista de Livros", "fa-book"));
         html.append("<ul>");
         for (Livro l : livros) {
-            html.append("<li>")
-                .append(l.titulo).append(" - ").append(l.autor).append(" (")
-                .append(l.quantidade).append(" disponíveis)</li>");
+            html.append("<li>").append(l.titulo).append(" - ").append(l.autor)
+                .append(" (").append(l.quantidade).append(" disponíveis)</li>");
         }
-        html.append("</ul>");
-        html.append(botaoVoltar());
-        html.append(rodapeHtml());
+        html.append("</ul>").append(botaoVoltar()).append(rodapeHtml());
         responder(exchange, html.toString());
     }
 
     static void listarEmprestimos(HttpExchange exchange) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        StringBuilder html = new StringBuilder(cabecalhoHtml("Livros Emprestados"));
+        StringBuilder html = new StringBuilder(cabecalhoHtml("Livros Emprestados", "fa-book-reader"));
         html.append("<table class='table table-bordered'><tr><th>Matrícula</th><th>Livro</th><th>Data Empréstimo</th><th>Data Devolução</th></tr>");
         for (Emprestimo e : emprestimos) {
             if (!e.devolvido) {
@@ -123,16 +119,14 @@ public class Servidor {
                     .append("</td><td>").append(sdf.format(e.dataDevolucao)).append("</td></tr>");
             }
         }
-        html.append("</table>");
-        html.append(botaoVoltar());
-        html.append(rodapeHtml());
+        html.append("</table>").append(botaoVoltar()).append(rodapeHtml());
         responder(exchange, html.toString());
     }
 
     static void listarAtrasados(HttpExchange exchange) throws IOException {
         Date hoje = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        StringBuilder html = new StringBuilder(cabecalhoHtml("Livros Atrasados"));
+        StringBuilder html = new StringBuilder(cabecalhoHtml("Livros Atrasados", "fa-clock"));
         html.append("<table class='table table-bordered'><tr><th>Matrícula</th><th>Livro</th><th>Data Devolução</th></tr>");
         for (Emprestimo e : emprestimos) {
             if (!e.devolvido && e.dataDevolucao.before(hoje)) {
@@ -140,13 +134,11 @@ public class Servidor {
                     .append(e.titulo).append("</td><td>").append(sdf.format(e.dataDevolucao)).append("</td></tr>");
             }
         }
-        html.append("</table>");
-        html.append(botaoVoltar());
-        html.append(rodapeHtml());
+        html.append("</table>").append(botaoVoltar()).append(rodapeHtml());
         responder(exchange, html.toString());
     }
 
-    static String cabecalhoHtml(String titulo) {
+    static String cabecalhoHtml(String titulo, String icone) {
         return """
         <!DOCTYPE html>
         <html lang="pt-br">
@@ -157,8 +149,8 @@ public class Servidor {
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         </head>
         <body class="container mt-5">
-        <h2 class="mb-4"><i class="fas fa-book"></i> %s</h2>
-        """.formatted(titulo, titulo);
+        <h2 class="mb-4"><i class="fas %s"></i> %s</h2>
+        """.formatted(titulo, icone, titulo);
     }
 
     static String botaoVoltar() {
